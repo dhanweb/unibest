@@ -1,57 +1,20 @@
-/* eslint-disable no-param-reassign */
-import { useUserStore } from '@/store'
-import { UserInfo } from '@/typings'
+import { CustomRequestOptions } from '@/interceptors/request'
 
-type Data<T> = {
-  code: number
-  msg: string
-  result: T
-}
-
-// 请求基地址
-const baseURL = import.meta.env.VITE_SERVER_BASEURL
-// console.log(import.meta.env)
-
-// 拦截器配置
-const httpInterceptor = {
-  // 拦截前触发
-  invoke(options: UniApp.RequestOptions) {
-    // 1. 非 http 开头需拼接地址
-    if (!options.url.startsWith('http')) {
-      options.url = baseURL + options.url
-    }
-    // 2. 请求超时
-    options.timeout = 10000 // 10s
-    // 3. 添加小程序端请求头标识
-    options.header = {
-      platform: 'mp-weixin', // 可选值与 uniapp 定义的平台一致，告诉后台来源
-      ...options.header,
-    }
-    // 4. 添加 token 请求头标识
-    const userStore = useUserStore()
-    const { token } = userStore.userInfo as unknown as UserInfo
-    if (token) {
-      options.header.Authorization = `Bearer ${token}`
-    }
-  },
-}
-
-// 拦截 request 请求
-uni.addInterceptor('request', httpInterceptor)
-// 拦截 uploadFile 文件上传
-uni.addInterceptor('uploadFile', httpInterceptor)
-
-export const http = <T>(options: UniApp.RequestOptions) => {
+export const http = <T>(options: CustomRequestOptions) => {
   // 1. 返回 Promise 对象
-  return new Promise<Data<T>>((resolve, reject) => {
+  return new Promise<IResData<T>>((resolve, reject) => {
     uni.request({
       ...options,
+      dataType: 'json',
+      // #ifndef MP-WEIXIN
+      responseType: 'json',
+      // #endif
       // 响应成功
       success(res) {
         // 状态码 2xx，参考 axios 的设计
         if (res.statusCode >= 200 && res.statusCode < 300) {
           // 2.1 提取核心数据 res.data
-          resolve(res.data as Data<T>)
+          resolve(res.data as IResData<T>)
         } else if (res.statusCode === 401) {
           // 401错误  -> 清理用户信息，跳转到登录页
           // userStore.clearUserInfo()
@@ -59,10 +22,11 @@ export const http = <T>(options: UniApp.RequestOptions) => {
           reject(res)
         } else {
           // 其他错误 -> 根据后端错误信息轻提示
-          uni.showToast({
-            icon: 'none',
-            title: (res.data as Data<T>).msg || '请求错误',
-          })
+          !options.hideErrorToast &&
+            uni.showToast({
+              icon: 'none',
+              title: (res.data as IResData<T>).msg || '请求错误',
+            })
           reject(res)
         }
       },
@@ -78,4 +42,39 @@ export const http = <T>(options: UniApp.RequestOptions) => {
   })
 }
 
-export default http
+/**
+ * GET 请求
+ * @param url 后台地址
+ * @param query 请求query参数
+ * @returns
+ */
+export const httpGet = <T>(url: string, query?: Record<string, any>) => {
+  return http<T>({
+    url,
+    query,
+    method: 'GET',
+  })
+}
+
+/**
+ * POST 请求
+ * @param url 后台地址
+ * @param data 请求body参数
+ * @param query 请求query参数，post请求也支持query，很多微信接口都需要
+ * @returns
+ */
+export const httpPost = <T>(
+  url: string,
+  data?: Record<string, any>,
+  query?: Record<string, any>,
+) => {
+  return http<T>({
+    url,
+    query,
+    data,
+    method: 'POST',
+  })
+}
+
+http.get = httpGet
+http.post = httpPost

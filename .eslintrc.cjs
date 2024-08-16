@@ -10,12 +10,11 @@ module.exports = {
     'plugin:vue/vue3-essential',
     // eslint-plugin-import 插件， @see https://www.npmjs.com/package/eslint-plugin-import
     'plugin:import/recommended',
-    // eslint-config-airbnb-base 插件， tips: 本插件也可以替换成 eslint-config-standard
-    'airbnb-base',
+    // eslint-config-airbnb-base 插件 已经改用 eslint-config-standard 插件
+    'standard',
     // 1. 接入 prettier 的规则
     'prettier',
     'plugin:prettier/recommended',
-    'vue-global-api',
     './.eslintrc-auto-import.json',
   ],
   overrides: [
@@ -65,6 +64,14 @@ module.exports = {
     'vue/multi-word-component-names': 'off',
     '@typescript-eslint/no-explicit-any': 'off',
     'no-underscore-dangle': 'off',
+    'no-use-before-define': 'off',
+    'no-undef': 'off',
+    'no-unused-vars': 'off',
+    'no-param-reassign': 'off',
+    '@typescript-eslint/no-unused-vars': 'off',
+    // 避免 `eslint` 对于 `typescript` 函数重载的误报
+    'no-redeclare': 'off',
+    '@typescript-eslint/no-redeclare': 'error',
   },
   // eslint-import-resolver-typescript 插件，@see https://www.npmjs.com/package/eslint-import-resolver-typescript
   settings: {
@@ -85,5 +92,6 @@ module.exports = {
     UniHelper: true,
     Page: true,
     App: true,
+    NodeJS: true,
   },
 }

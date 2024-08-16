@@ -1,23 +1,17 @@
 <template>
-  <view class="default-layout">
+  <wd-config-provider :themeVars="themeVars">
     <slot />
-    <view class="text-gray-400 m-auto mt-12">[default layout]</view>
-  </view>
+    <wd-toast />
+    <wd-message-box />
+  </wd-config-provider>
 </template>
 
-<style lang="scss">
-.default-layout {
-  display: flex;
-  flex-direction: column;
+<script lang="ts" setup>
+import type { ConfigProviderThemeVars } from 'wot-design-uni'
 
-  // #ifdef MP-WEIXIN
-  height: 100%;
-
-  // #endif
-  // #ifndef MP-WEIXIN
-  min-height: 100%;
-
-  // #endif
-  overflow: hidden;
+const themeVars: ConfigProviderThemeVars = {
+  // colorTheme: 'red',
+  // buttonPrimaryBgColor: '#07c160',
+  // buttonPrimaryColor: '#07c160',
 }
-</style>
+</script>

@@ -5,7 +5,6 @@ import { loadEnv } from 'vite'
 
 // 获取环境变量的范例
 const env = loadEnv(process.env.NODE_ENV!, path.resolve(process.cwd(), 'env'))
-// console.log(env)
 const {
   VITE_APP_TITLE,
   VITE_UNI_APPID,
@@ -32,6 +31,9 @@ export default defineManifestConfig({
     usingComponents: true,
     nvueStyleCompiler: 'uni-app',
     compilerVersion: 3,
+    compatible: {
+      ignoreVersion: true,
+    },
     splashscreen: {
       alwaysShowBeforeRender: true,
       waiting: true,
@@ -71,8 +73,36 @@ export default defineManifestConfig({
       sdkConfigs: {},
       /* 图标配置 */
       icons: {
-        android: {},
-        ios: {},
+        android: {
+          hdpi: 'static/app/icons/72x72.png',
+          xhdpi: 'static/app/icons/96x96.png',
+          xxhdpi: 'static/app/icons/144x144.png',
+          xxxhdpi: 'static/app/icons/192x192.png',
+        },
+        ios: {
+          appstore: 'static/app/icons/1024x1024.png',
+          ipad: {
+            app: 'static/app/icons/76x76.png',
+            'app@2x': 'static/app/icons/152x152.png',
+            notification: 'static/app/icons/20x20.png',
+            'notification@2x': 'static/app/icons/40x40.png',
+            'proapp@2x': 'static/app/icons/167x167.png',
+            settings: 'static/app/icons/29x29.png',
+            'settings@2x': 'static/app/icons/58x58.png',
+            spotlight: 'static/app/icons/40x40.png',
+            'spotlight@2x': 'static/app/icons/80x80.png',
+          },
+          iphone: {
+            'app@2x': 'static/app/icons/120x120.png',
+            'app@3x': 'static/app/icons/180x180.png',
+            'notification@2x': 'static/app/icons/40x40.png',
+            'notification@3x': 'static/app/icons/60x60.png',
+            'settings@2x': 'static/app/icons/58x58.png',
+            'settings@3x': 'static/app/icons/87x87.png',
+            'spotlight@2x': 'static/app/icons/80x80.png',
+            'spotlight@3x': 'static/app/icons/120x120.png',
+          },
+        },
       },
     },
   },
@@ -85,10 +115,11 @@ export default defineManifestConfig({
       urlCheck: false,
     },
     usingComponents: true,
-    __usePrivacyCheck__: true,
+    // __usePrivacyCheck__: true,
   },
   'mp-alipay': {
     usingComponents: true,
+    styleIsolation: 'shared',
   },
   'mp-baidu': {
     usingComponents: true,
